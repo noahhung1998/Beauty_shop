@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-brand-charcoal font-sans;
+  }
+
+  ::selection {
+    @apply bg-brand-rose-gold/20 text-brand-charcoal;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-brand-rose-gold text-white font-medium rounded-xl
+           hover:bg-brand-rose-gold-dark active:scale-[0.98] transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 bg-brand-cream text-brand-charcoal font-medium rounded-xl
+           hover:bg-brand-cream-dark active:scale-[0.98] transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-brand-cream-dark text-brand-charcoal font-medium rounded-xl
+           hover:border-brand-rose-gold hover:text-brand-rose-gold active:scale-[0.98] transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-brand-cream/50 border border-brand-cream-dark rounded-xl text-sm text-brand-charcoal
+           placeholder:text-brand-warm-gray
+           focus:outline-none focus:ring-2 focus:ring-brand-rose-gold/30 focus:border-brand-rose-gold
+           transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4a0a7;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b76e79;
+}

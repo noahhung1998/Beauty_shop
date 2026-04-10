@@ -1,0 +1,37 @@
+# Beauty Shop Backend - Python Dependencies
+# ==========================================
+
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Database
+SQLAlchemy[asyncio]==2.0.36
+alembic==1.14.1
+psycopg2-binary==2.9.10
+asyncpg==0.30.0
+
+# Data validation & settings
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.1
+
+# Payment
+stripe==11.4.1
+
+# File uploads
+python-multipart==0.0.20
+
+# HTTP client (carrier webhooks, external calls)
+httpx==0.28.1
+
+# Task queue
+celery==5.4.0
+redis==5.2.1
+
+# Utilities
+python-dateutil==2.9.0.post0

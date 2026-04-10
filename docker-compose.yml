@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+  # PostgreSQL database
+  db:
+    image: postgres:16-alpine
+    container_name: beautyshop_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: beautyshop
+      POSTGRES_USER: beautyshop
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-beautyshop_dev_2026}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beautyshop"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching, Celery broker, and telemetry buffering
+  redis:
+    image: redis:7-alpine
+    container_name: beautyshop_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  # FastAPI backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: beautyshop_backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://beautyshop:${DB_PASSWORD:-beautyshop_dev_2026}@db:5432/beautyshop
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+
+  # Celery worker for async tasks (email, telemetry flush)
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: beautyshop_celery
+    command: celery -A app.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://beautyshop:${DB_PASSWORD:-beautyshop_dev_2026}@db:5432/beautyshop
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - backend
+      - redis
+
+  # Next.js frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: beautyshop_frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:
+  redisdata:
